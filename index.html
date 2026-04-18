@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claire's Birthday Message Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Pinyon+Script&display=swap" rel="stylesheet" />
+  <style>
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #fdf8f2;
+      --blush:      #f5e6dc;
+      --rose:       #e8b4a0;
+      --deep-rose:  #c47d68;
+      --wine:       #7a3f35;
+      --gold:       #c9a96e;
+      --warm-gray:  #8a7d74;
+      --text-dark:  #2e1f1a;
+      --text-mid:   #5a433c;
+      --text-light: #9c8a83;
+      --white:      #ffffff;
+      --shadow-sm:  0 2px 12px rgba(122,63,53,.08);
+      --shadow-md:  0 6px 32px rgba(122,63,53,.13);
+      --shadow-lg:  0 16px 56px rgba(122,63,53,.18);
+      --radius:     16px;
+      --radius-lg:  28px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─────────────────────────────────────────────
+       CONFETTI CANVAS
+    ───────────────────────────────────────────── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* ─────────────────────────────────────────────
+       DECORATIVE BACKGROUND SHAPES
+    ───────────────────────────────────────────── */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-blob-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, #f5d5c8, #f0c4b0);
+      top: -120px; right: -100px;
+    }
+    .bg-blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #fde8d4, #f8d5be);
+      bottom: -80px; left: -80px;
+    }
+    .bg-blob-3 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, #f9e4ba, #f5d898);
+      top: 42%; left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.22;
+    }
+
+    /* ─────────────────────────────────────────────
+       LAYOUT WRAPPER
+    ───────────────────────────────────────────── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       HEADER SECTION
+    ───────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 52px;
+      animation: fadeUp 0.9s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1.5px solid rgba(196,125,104,.25);
+      border-radius: 100px;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--deep-rose);
+      letter-spacing: 0.04em;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--deep-rose);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 500;
+      line-height: 1.18;
+      color: var(--text-dark);
+      margin-bottom: 18px;
+      letter-spacing: -0.01em;
+    }
+    .main-title em {
+      font-style: italic;
+      color: var(--deep-rose);
+    }
+
+    .subtitle {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text-mid);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.7;
+      letter-spacing: 0.01em;
+    }
+
+    /* ─────────────────────────────────────────────
+       CARD (FORM CONTAINER)
+    ───────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 48px 52px;
+      width: 100%;
+      max-width: 560px;
+      border: 1px solid rgba(196,125,104,.12);
+      animation: fadeUp 0.9s cubic-bezier(.22,1,.36,1) 0.15s both;
+    }
+
+    /* ─────────────────────────────────────────────
+       FORM ELEMENTS
+    ───────────────────────────────────────────── */
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1.5px solid rgba(196,125,104,.22);
+      border-radius: var(--radius);
+      padding: 15px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-dark);
+      background: var(--cream);
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      outline: none;
+      resize: none;
+    }
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: var(--text-light);
+    }
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--deep-rose);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(196,125,104,.10);
+    }
+
+    textarea {
+      height: 150px;
+      line-height: 1.7;
+    }
+
+    /* ─────────────────────────────────────────────
+       BUTTON
+    ───────────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--deep-rose) 0%, #b5604f 100%);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      padding: 17px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(196,125,104,.38);
+      transition: transform 0.22s cubic-bezier(.22,1,.36,1), box-shadow 0.22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.22s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(196,125,104,.45);
+    }
+    .btn-primary:hover::after {
+      background: rgba(255,255,255,.06);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* ─────────────────────────────────────────────
+       SUCCESS STATE
+    ───────────────────────────────────────────── */
+    .success-panel {
+      display: none;
+      text-align: center;
+      padding: 16px 0 8px;
+      animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
+    }
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+    .success-text {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+    .success-text span {
+      color: var(--deep-rose);
+      font-weight: 500;
+    }
+
+    .send-another {
+      margin-top: 24px;
+      background: none;
+      border: 1.5px solid rgba(196,125,104,.32);
+      border-radius: var(--radius);
+      padding: 11px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--deep-rose);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .send-another:hover {
+      background: var(--blush);
+      border-color: var(--deep-rose);
+    }
+
+    /* ─────────────────────────────────────────────
+       FOOTER NAV
+    ───────────────────────────────────────────── */
+    .page-footer {
+      margin-top: 48px;
+      text-align: center;
+      animation: fadeUp 0.9s cubic-bezier(.22,1,.36,1) 0.3s both;
+    }
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-light);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+      border-bottom: 1px solid transparent;
+    }
+    .footer-link:hover {
+      color: var(--deep-rose);
+      border-bottom-color: var(--deep-rose);
+    }
+
+    /* ─────────────────────────────────────────────
+       DECORATIVE DIVIDER IN CARD
+    ───────────────────────────────────────────── */
+    .card-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .card-divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(196,125,104,.15);
+    }
+    .card-divider-icon {
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    /* ─────────────────────────────────────────────
+       ANIMATIONS
+    ───────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ─────────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .card { padding: 36px 28px; }
+      .page-wrapper { padding: 48px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background decorations -->
+  <canvas id="confetti-canvas"></canvas>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
+  <div class="page-wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Claire's Birthday Vault is open ✦
+      </div>
+      <h1 class="main-title">
+        Write a Birthday Message<br>for <em>Claire</em>
+      </h1>
+      <p class="subtitle">
+        Share your love, wishes, and memories to make Claire's birthday truly unforgettable.
+      </p>
+    </header>
+
+    <!-- Form Card -->
+    <div class="card">
+
+      <div class="card-divider">
+        <div class="card-divider-line"></div>
+        <span class="card-divider-icon">✦</span>
+        <div class="card-divider-line"></div>
+      </div>
+
+      <!-- Message Form -->
+      <div id="form-section">
+        <div class="form-group">
+          <label for="sender-name">Your Name</label>
+          <input
+            type="text"
+            id="sender-name"
+            placeholder="e.g. Sarah Johnson"
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="message-body">Your Birthday Message</label>
+          <textarea
+            id="message-body"
+            placeholder="Write something warm, funny, heartfelt — anything from the heart…"
+          ></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="submitMessage()">
+          Send Your Wishes &nbsp;✦
+        </button>
+      </div>
+
+      <!-- Success Panel -->
+      <div class="success-panel" id="success-panel">
+        <span class="success-icon">🎁</span>
+        <h2 class="success-title">Message Delivered!</h2>
+        <p class="success-text">
+          Your message has been added to <span>Claire's birthday vault.</span><br>
+          She'll see it on her special day. 💛
+        </p>
+        <button class="send-another" onclick="resetForm()">Send Another Message</button>
+      </div>
+
+    </div><!-- /card -->
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <a href="login.html" class="footer-link">Claire? Log in to see your messages →</a>
+    </footer>
+
+  </div><!-- /page-wrapper -->
+
+  <script>
+    // ─── Confetti Canvas ───────────────────────────────────────
+    (function() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles = [];
+
+      const COLORS = ['#f5b8a0','#e8c9b5','#f5d898','#d4a5a5','#b8cce0','#c9a96e','#e8b4a0'];
+      const COUNT  = 55;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function Particle() {
+        this.x     = Math.random() * W;
+        this.y     = Math.random() * H - H;
+        this.w     = Math.random() * 8 + 4;
+        this.h     = this.w * (Math.random() * 0.4 + 0.3);
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.tilt  = Math.random() * 10 - 5;
+        this.tiltV = Math.random() * 0.4 + 0.2;
+        this.vel   = Math.random() * 1.4 + 0.6;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.angleV= Math.random() * 0.04 - 0.02;
+        this.alpha = Math.random() * 0.5 + 0.3;
+      }
+
+      Particle.prototype.update = function() {
+        this.y += this.vel;
+        this.x += Math.sin(this.angle) * 0.7;
+        this.angle += this.angleV;
+        this.tilt  += this.tiltV;
+        if (this.y > H + 20) { this.y = -20; this.x = Math.random() * W; }
+      };
+
+      Particle.prototype.draw = function() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle   = this.color;
+        ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
+        ctx.rotate(this.tilt * Math.PI / 180);
+        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+        ctx.restore();
+      };
+
+      function init() {
+        resize();
+        for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener('resize', resize);
+      init();
+      loop();
+    })();
+
+    // ─── Message Storage ───────────────────────────────────────
+    function getMessages() {
+      try { return JSON.parse(localStorage.getItem('claire_messages') || '[]'); }
+      catch { return []; }
+    }
+    function saveMessages(msgs) {
+      localStorage.setItem('claire_messages', JSON.stringify(msgs));
+    }
+
+    // ─── Form Submission ───────────────────────────────────────
+    function submitMessage() {
+      const name = document.getElementById('sender-name').value.trim();
+      const msg  = document.getElementById('message-body').value.trim();
+
+      if (!name) { shake('sender-name'); return; }
+      if (!msg)  { shake('message-body'); return; }
+
+      const messages = getMessages();
+      messages.push({
+        id:        Date.now(),
+        sender:    name,
+        message:   msg,
+        timestamp: new Date().toISOString()
+      });
+      saveMessages(messages);
+
+      // Show success
+      document.getElementById('form-section').style.display  = 'none';
+      document.getElementById('success-panel').style.display = 'block';
+    }
+
+    function resetForm() {
+      document.getElementById('sender-name').value = '';
+      document.getElementById('message-body').value = '';
+      document.getElementById('form-section').style.display  = 'block';
+      document.getElementById('success-panel').style.display = 'none';
+    }
+
+    // ─── Shake animation for validation ───────────────────────
+    function shake(id) {
+      const el = document.getElementById(id);
+      el.style.borderColor = '#c47d68';
+      el.style.animation = 'none';
+      el.offsetHeight; // reflow
+      el.style.animation = 'shakeX 0.45s cubic-bezier(.36,.07,.19,.97)';
+      el.focus();
+      setTimeout(() => { el.style.animation = ''; }, 500);
+    }
+  </script>
+
+  <style>
+    @keyframes shakeX {
+      0%,100%{ transform:translateX(0); }
+      20%    { transform:translateX(-8px); }
+      40%    { transform:translateX(7px); }
+      60%    { transform:translateX(-5px); }
+      80%    { transform:translateX(4px); }
+    }
+  </style>
+</body>
+</html>

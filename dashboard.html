@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claire's Birthday Vault — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Pinyon+Script&display=swap" rel="stylesheet" />
+  <!-- html2canvas for card download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #fdf8f2;
+      --blush:      #f5e6dc;
+      --rose:       #e8b4a0;
+      --deep-rose:  #c47d68;
+      --wine:       #7a3f35;
+      --gold:       #c9a96e;
+      --warm-gray:  #8a7d74;
+      --text-dark:  #2e1f1a;
+      --text-mid:   #5a433c;
+      --text-light: #9c8a83;
+      --white:      #ffffff;
+      --sidebar-bg: #2e1f1a;
+      --shadow-sm:  0 2px 12px rgba(122,63,53,.08);
+      --shadow-md:  0 6px 32px rgba(122,63,53,.13);
+      --shadow-lg:  0 16px 56px rgba(122,63,53,.18);
+      --radius:     16px;
+      --radius-lg:  24px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ─── LAYOUT ─── */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 40px 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+    }
+
+    .sidebar-brand {
+      padding: 0 28px 36px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-brand-script {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 2.4rem;
+      color: var(--rose);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .sidebar-brand-sub {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+    }
+
+    .sidebar-nav {
+      padding: 24px 16px;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+      padding: 0 12px;
+      margin-bottom: 10px;
+      margin-top: 18px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,255,255,.55);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 3px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(196,125,104,.25), rgba(196,125,104,.12));
+      color: var(--rose);
+      font-weight: 500;
+    }
+    .nav-item-icon { font-size: 16px; }
+
+    .sidebar-footer {
+      padding: 20px 20px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,.35);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      width: 100%;
+    }
+    .logout-btn:hover { color: rgba(255,255,255,.7); background: rgba(255,255,255,.06); }
+
+    /* ─── MAIN CONTENT ─── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 48px 52px;
+      min-height: 100vh;
+    }
+
+    /* ─── TOP HEADER ─── */
+    .dashboard-header {
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 4px;
+    }
+
+    .welcome-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500;
+      color: var(--text-dark);
+      line-height: 1.2;
+    }
+    .welcome-title span { color: var(--deep-rose); font-style: italic; }
+
+    .welcome-sub {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-mid);
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 44px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) 0.1s both;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid rgba(196,125,104,.12);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      min-width: 160px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 500;
+      color: var(--deep-rose);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    /* Section title */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) 0.18s both;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    .message-count-badge {
+      background: var(--blush);
+      color: var(--deep-rose);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── MESSAGES GRID ─── */
+    .messages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) 0.25s both;
+    }
+
+    /* Each message card */
+    .msg-card {
+      background: var(--white);
+      border: 1px solid rgba(196,125,104,.12);
+      border-radius: var(--radius-lg);
+      padding: 28px 28px 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s;
+    }
+    .msg-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .msg-card-header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .msg-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blush), var(--rose));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--wine);
+      flex-shrink: 0;
+    }
+
+    .msg-sender-info {}
+    .msg-sender-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-dark);
+    }
+    .msg-timestamp {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .msg-body {
+      font-size: 14.5px;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.75;
+      flex: 1;
+      /* Clamp to 4 lines in list; show full on expand */
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .msg-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid rgba(196,125,104,.1);
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, var(--deep-rose), #b5604f);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 3px 14px rgba(196,125,104,.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-download:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(196,125,104,.44);
+    }
+
+    .btn-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1.5px solid rgba(196,125,104,.25);
+      border-radius: 10px;
+      padding: 9px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--deep-rose);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-preview:hover {
+      background: var(--blush);
+      border-color: var(--deep-rose);
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 40px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px dashed rgba(196,125,104,.25);
+    }
+    .empty-icon { font-size: 52px; margin-bottom: 16px; }
+    .empty-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .empty-sub {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-light);
+    }
+    .empty-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--deep-rose);
+      font-size: 14px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(196,125,104,.3);
+      transition: border-color 0.2s;
+    }
+    .empty-link:hover { border-color: var(--deep-rose); }
+
+    /* ─── CARD PREVIEW MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(46,31,26,.55);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      max-width: 600px;
+      width: 100%;
+      animation: scaleIn 0.35s cubic-bezier(.22,1,.36,1);
+    }
+
+    .modal-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid rgba(196,125,104,.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    .modal-close {
+      width: 32px; height: 32px;
+      background: var(--blush);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: var(--rose); }
+
+    .modal-body { padding: 28px; }
+    .modal-actions {
+      padding: 16px 28px 24px;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    /* ─── THE BIRTHDAY CARD (rendered for download) ─── */
+    #birthday-card-render {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 900px;
+      height: 600px;
+    }
+
+    .birthday-card {
+      width: 900px;
+      height: 600px;
+      background: linear-gradient(145deg, #fdf3ec 0%, #fae8dc 35%, #f5dfd0 70%, #fbeade 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 70px;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Card decorative border */
+    .birthday-card::before {
+      content: '';
+      position: absolute;
+      inset: 18px;
+      border: 1.5px solid rgba(196,125,104,.28);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    /* Corner ornaments */
+    .card-corner {
+      position: absolute;
+      font-size: 26px;
+      opacity: 0.55;
+      color: var(--gold);
+    }
+    .card-corner.tl { top: 28px; left: 32px; }
+    .card-corner.tr { top: 28px; right: 32px; transform: scaleX(-1); }
+    .card-corner.bl { bottom: 28px; left: 32px; transform: scaleY(-1); }
+    .card-corner.br { bottom: 28px; right: 32px; transform: scale(-1); }
+
+    /* Top flourish */
+    .card-top-ornament {
+      position: absolute;
+      top: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    /* Sender section */
+    .card-from-label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 5px;
+    }
+    .card-sender-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 24px;
+    }
+
+    /* Divider */
+    .card-divider-el {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .card-divider-line-el {
+      flex: 1;
+      height: 1px;
+      background: rgba(196,125,104,.25);
+    }
+    .card-divider-icon-el {
+      font-size: 14px;
+      color: var(--gold);
+    }
+
+    /* Message body */
+    .card-message-text {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.8;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 36px;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* Happy Birthday text */
+    .card-hb-wrapper {
+      position: absolute;
+      bottom: 38px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .card-hb-text {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 3.6rem;
+      color: var(--wine);
+      line-height: 1;
+      text-shadow: 0 2px 12px rgba(122,63,53,.18);
+    }
+    .card-hb-sub {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 4px;
+    }
+
+    /* Subtle floral bg motif */
+    .card-bg-motif {
+      position: absolute;
+      font-size: 120px;
+      opacity: 0.045;
+      pointer-events: none;
+      user-select: none;
+    }
+    .card-bg-motif.left  { left: -20px; top: 50%; transform: translateY(-50%); }
+    .card-bg-motif.right { right: -20px; top: 50%; transform: translateY(-50%) scaleX(-1); }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding: 32px 20px; }
+      .messages-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .stats-row { flex-direction: column; }
+      .main-content { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ─── Sidebar ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-script">Claire</div>
+      <div class="sidebar-brand-sub">Birthday Vault</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Dashboard</div>
+      <div class="nav-item active">
+        <span class="nav-item-icon">💌</span>
+        All Messages
+      </div>
+      <div class="nav-item" onclick="window.open('index.html','_blank')">
+        <span class="nav-item-icon">🔗</span>
+        Share Vault Link
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">
+        <span>→</span> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ─── -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-top">
+        <div>
+          <h1 class="welcome-title">Welcome, <span>Claire</span> 💛</h1>
+          <p class="welcome-sub">Here are the beautiful messages people wrote just for you.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-total">0</div>
+        <div class="stat-label">Messages Received</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">💛</div>
+        <div class="stat-label">All with Love</div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div class="section-header">
+      <h2 class="section-title">Birthday Messages</h2>
+      <span class="message-count-badge" id="msg-count-badge">0 messages</span>
+    </div>
+
+    <div class="messages-grid" id="messages-grid">
+      <!-- Populated by JS -->
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── Modal Preview ─── -->
+<div class="modal-overlay" id="card-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Birthday Card Preview</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-card-preview">
+      <!-- Card preview injected here -->
+    </div>
+    <div class="modal-actions">
+      <button class="btn-preview" onclick="closeModal()">Close</button>
+      <button class="btn-download" id="modal-download-btn" onclick="triggerDownload()">
+        ⬇ Download Card
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Off-screen render target for html2canvas ─── -->
+<div id="birthday-card-render"></div>
+
+<script>
+  // ─── Auth Guard ───────────────────────────────────────────
+  if (sessionStorage.getItem('claire_auth') !== 'true') {
+    window.location.href = 'login.html';
+  }
+
+  // ─── Data ─────────────────────────────────────────────────
+  function getMessages() {
+    try { return JSON.parse(localStorage.getItem('claire_messages') || '[]'); }
+    catch { return []; }
+  }
+
+  function formatDate(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    } catch { return ''; }
+  }
+
+  function getInitial(name) {
+    return name ? name.trim()[0].toUpperCase() : '?';
+  }
+
+  // ─── Render Messages ──────────────────────────────────────
+  function renderMessages() {
+    const messages = getMessages();
+    const grid     = document.getElementById('messages-grid');
+    const statEl   = document.getElementById('stat-total');
+    const badgeEl  = document.getElementById('msg-count-badge');
+
+    statEl.textContent  = messages.length;
+    badgeEl.textContent = `${messages.length} message${messages.length !== 1 ? 's' : ''}`;
+
+    if (messages.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🎁</div>
+          <h3 class="empty-title">No messages yet</h3>
+          <p class="empty-sub">Share your vault link and the messages will appear here!</p>
+          <a href="index.html" target="_blank" class="empty-link">Open Message Form →</a>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = messages.map((msg, idx) => `
+      <div class="msg-card" style="animation-delay:${idx * 0.07}s; animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) ${idx * 0.06}s both;">
+        <div class="msg-card-header">
+          <div class="msg-avatar">${getInitial(msg.sender)}</div>
+          <div class="msg-sender-info">
+            <div class="msg-sender-name">${escapeHtml(msg.sender)}</div>
+            <div class="msg-timestamp">${formatDate(msg.timestamp)}</div>
+          </div>
+        </div>
+        <div class="msg-body">${escapeHtml(msg.message)}</div>
+        <div class="msg-card-footer">
+          <button class="btn-preview" onclick="previewCard(${msg.id})">
+            👁 Preview
+          </button>
+          <button class="btn-download" onclick="downloadCard(${msg.id})">
+            ⬇ Download Card
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ─── Card Builder ─────────────────────────────────────────
+  function buildCardHtml(msg) {
+    return `
+      <div class="birthday-card" id="card-inner-${msg.id}">
+        <!-- Background motifs -->
+        <div class="card-bg-motif left">🌸</div>
+        <div class="card-bg-motif right">🌸</div>
+
+        <!-- Corner ornaments -->
+        <div class="card-corner tl">✦</div>
+        <div class="card-corner tr">✦</div>
+        <div class="card-corner bl">✦</div>
+        <div class="card-corner br">✦</div>
+
+        <!-- Top flourish -->
+        <div class="card-top-ornament">✦ &nbsp; A Birthday Message &nbsp; ✦</div>
+
+        <!-- From -->
+        <div class="card-from-label">From</div>
+        <div class="card-sender-name">${escapeHtml(msg.sender)}</div>
+
+        <!-- Divider -->
+        <div class="card-divider-el">
+          <div class="card-divider-line-el"></div>
+          <div class="card-divider-icon-el">✦</div>
+          <div class="card-divider-line-el"></div>
+        </div>
+
+        <!-- Message -->
+        <div class="card-message-text">"${escapeHtml(msg.message)}"</div>
+
+        <!-- Happy Birthday -->
+        <div class="card-hb-wrapper">
+          <div class="card-hb-text">Happy Birthday Claire</div>
+          <div class="card-hb-sub">with all our love ✦</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ─── Preview Modal ────────────────────────────────────────
+  let activeDownloadId = null;
+
+  function previewCard(id) {
+    const messages = getMessages();
+    const msg = messages.find(m => m.id === id);
+    if (!msg) return;
+
+    activeDownloadId = id;
+    document.getElementById('modal-card-preview').innerHTML = `
+      <div style="overflow:hidden; border-radius: 14px; box-shadow: 0 4px 24px rgba(46,31,26,.15);">
+        ${buildCardHtml(msg)}
+      </div>
+    `;
+    // Scale preview inside modal
+    const cardEl = document.querySelector('#modal-card-preview .birthday-card');
+    if (cardEl) {
+      cardEl.style.transform = 'scale(0.56)';
+      cardEl.style.transformOrigin = 'top left';
+      cardEl.style.marginBottom = `${-(600 * 0.44)}px`;
+      cardEl.style.width = '900px';
+    }
+
+    document.getElementById('card-modal').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('card-modal') || e.target.closest('.modal-close')) {
+      document.getElementById('card-modal').classList.remove('open');
+    }
+  }
+
+  function triggerDownload() {
+    if (activeDownloadId) downloadCard(activeDownloadId);
+  }
+
+  // ─── Download Card ────────────────────────────────────────
+  async function downloadCard(id) {
+    const messages = getMessages();
+    const msg = messages.find(m => m.id === id);
+    if (!msg) return;
+
+    const renderContainer = document.getElementById('birthday-card-render');
+    renderContainer.innerHTML = buildCardHtml(msg);
+
+    const cardEl = renderContainer.querySelector('.birthday-card');
+    cardEl.style.position = 'relative';
+    cardEl.style.left = '0';
+    cardEl.style.top  = '0';
+
+    // Briefly move into viewport for capture
+    renderContainer.style.position = 'fixed';
+    renderContainer.style.left = '-9999px';
+    renderContainer.style.top  = '0';
+
+    // Wait for fonts
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 300));
+
+    try {
+      const canvas = await html2canvas(cardEl, {
+        width:  900,
+        height: 600,
+        scale:  2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+      });
+
+      const link = document.createElement('a');
+      link.download = `birthday-card-from-${msg.sender.replace(/\s+/g,'_')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Card download error:', err);
+      alert('Could not generate card image. Please try again.');
+    }
+  }
+
+  // ─── Logout ───────────────────────────────────────────────
+  function logout() {
+    sessionStorage.removeItem('claire_auth');
+    window.location.href = 'login.html';
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  renderMessages();
+</script>
+</body>
+</html>

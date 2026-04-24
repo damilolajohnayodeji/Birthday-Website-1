@@ -700,9 +700,24 @@
   }
 
   // ─── Data ─────────────────────────────────────────────────
- function getMessages() {
-  try { return JSON.parse(localStorage.getItem('claire_messages') || '[]'); }
-  catch { return []; }
+async function getMessages() {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('event_id', 'claire')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data.map(m => ({
+    id: m.id,
+    sender: m.name,
+    message: m.message,
+    timestamp: m.created_at
+  }));
 }
 
   function formatDate(iso) {
@@ -717,8 +732,8 @@
   }
 
   // ─── Render Messages ──────────────────────────────────────
-  function renderMessages() {
-    const messages = getMessages();
+  async function renderMessages() {
+    const messages = await getMessages();
     const grid     = document.getElementById('messages-grid');
     const statEl   = document.getElementById('stat-total');
     const badgeEl  = document.getElementById('msg-count-badge');
@@ -891,7 +906,9 @@
   }
 
   // ─── Init ─────────────────────────────────────────────────
-  renderMessages();
+(async function init() {
+  await renderMessages();
+})();
 </script> 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';

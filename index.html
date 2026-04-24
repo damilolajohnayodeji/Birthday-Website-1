@@ -504,10 +504,32 @@
     })();
 
     // ─── Message Storage ───────────────────────────────────────
-    function getMessages() {
-      try { return JSON.parse(localStorage.getItem('claire_messages') || '[]'); }
-      catch { return []; }
-    }
+    async function submitMessage(name, message) {
+  const { error } = await supabase
+    .from('messages')
+    .insert([
+      {
+        event_id: 'claire',
+        name: name,
+        message: message
+      }
+    ]);
+
+  if (error) {
+    alert("Error sending message");
+    console.error(error);
+  } else {
+    alert("Message sent 🎉");
+  }
+}
+    document.querySelector("form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const name = document.querySelector("#name").value;
+  const message = document.querySelector("#message").value;
+
+  submitMessage(name, message);
+});
     function saveMessages(msgs) {
       localStorage.setItem('claire_messages', JSON.stringify(msgs));
     }

@@ -892,6 +892,16 @@
 
   // ─── Init ─────────────────────────────────────────────────
   renderMessages();
+</script> 
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://xtzhgmsyfntdtpukqako.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emhnbXN5Zm50ZHRwdWtxYWtvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njk3NjM0MSwiZXhwIjoyMDkyNTUyMzQxfQ.LjxH5r1yUk9T9UD4ZWBPbc0n-kSu-UT3HIGYFN6JNHE'
+  );
+
+  window.supabase = supabase;
 </script>
 </body>
 </html>
